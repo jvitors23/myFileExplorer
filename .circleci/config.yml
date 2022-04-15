@@ -17,7 +17,7 @@ jobs:
           command: flake8 .
 
   build-test:
-    working_directory: /
+    working_directory: /app
     docker:
       - image: docker:17.05.0-ce-git
     steps:
