@@ -32,6 +32,7 @@ jobs:
           name: Build and tests
           command: |
             cp .env-example .env
+            docker-compose build
             docker-compose run --rm app bash -c "python manage.py test --verbosity=3"
 workflows:
   quality:
