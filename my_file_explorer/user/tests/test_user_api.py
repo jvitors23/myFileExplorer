@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse('register')
 LOGIN_URL = reverse('login')
+LOGOUT_URL = reverse('login')
 
 
 def create_user(**params):
@@ -108,4 +109,9 @@ class PublicUserApiTests(TestCase):
         }
         res = self.client.post(LOGIN_URL, payload)
 
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_user_must_be_logged_for_logout(self):
+        """Test that user must be logged to perform logout"""
+        res = self.client.post(LOGOUT_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
