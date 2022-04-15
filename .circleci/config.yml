@@ -33,7 +33,7 @@ jobs:
           command: |
             cd /app
             cp .env-example .env
-            docker-compose run --rm app bash -c "ls"
+            docker-compose run --rm app bash -c "ls /app"
 
 #
 #            docker-compose up -d
