@@ -31,7 +31,6 @@ jobs:
       - run:
           name: Build and tests
           command: |
-            ls
             cd /app
             ls
 #
