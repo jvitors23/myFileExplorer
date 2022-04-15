@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 User = get_user_model()
 
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user objects"""
 
