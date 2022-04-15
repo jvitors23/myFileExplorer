@@ -55,7 +55,7 @@ jobs:
           name: Run tests
           command: |
             cp .env-example .env
-            docker-compose exec app bash  -c "python manage.py test"
+            docker-compose run --rm app bash -c "python manage.py test --verbosity=3"
 workflows:
   quality:
     jobs:
