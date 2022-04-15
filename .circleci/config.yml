@@ -31,9 +31,13 @@ jobs:
       - run:
           name: Build and tests
           command: |
-            cp .env-example .env
-            docker-compose up -d
-            docker-compose exec app bash -c "ls"
+            ls
+            cd /app
+            ls
+#
+#            cp .env-example .env
+#            docker-compose up -d
+#            docker-compose exec --rm app bash -c "ls"
 workflows:
   quality:
     jobs:
