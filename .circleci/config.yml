@@ -32,11 +32,11 @@ jobs:
           name: Build and tests
           command: |
             cd /app
-            ls
+            docker-compose run --rm app bash -c "ls"
+
 #
 #            cp .env-example .env
 #            docker-compose up -d
-#            docker-compose exec --rm app bash -c "ls"
 workflows:
   quality:
     jobs:
