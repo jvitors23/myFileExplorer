@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from explorer.models import Folder
+from explorer.models import Folder, File
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
 
@@ -44,10 +44,25 @@ class ChildFolderSerializer(FolderBaseSerializer):
         exclude = ('owner', 'parent_folder')
 
 
+class FileBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Folder
+        fields = ('id', 'name', 'created_at', 'updated_at',
+                  'owner', 'parent_folder', 'file')
+        read_only_fields = ('id', 'owner', 'created_at', 'updated_at', 'name')
+
+
+class ChildFileSerializer(FileBaseSerializer):
+    class Meta:
+        model = File
+        exclude = ('owner', 'parent_folder')
+
+
 class ParentFolderSerializer(FolderBaseSerializer):
     """Serializer for parent folder objects"""
 
     child_folders = serializers.SerializerMethodField('_get_children_folders')
+    child_files = serializers.SerializerMethodField('_get_children_files')
 
     def _get_children_folders(self, obj):
         serializer = ChildFolderSerializer(
@@ -55,7 +70,14 @@ class ParentFolderSerializer(FolderBaseSerializer):
         )
         return serializer.data
 
+    def _get_children_files(self, obj):
+        serializer = ChildFileSerializer(
+            obj.get_children_files(), many=True
+        )
+        return serializer.data
+
     class Meta:
         model = Folder
         fields = ('id', 'name', 'created_at', 'updated_at',
-                  'owner', 'parent_folder', 'child_folders')
+                  'owner', 'parent_folder', 'child_folders',
+                  'child_files')
