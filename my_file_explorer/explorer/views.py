@@ -28,7 +28,7 @@ class CreateFolderAPIView(generics.CreateAPIView):
 class ManageFileAPIView(generics.RetrieveUpdateDestroyAPIView):
     """Manage file objects"""
     queryset = File.objects.all()
-    serializer_class = serializers.FileBaseSerializer
+    serializer_class = serializers.FileBaseUpdateDeleteSerializer
     permission_classes = (IsAuthenticated, ManageOwnObjects)
     parser_classes = (parsers.FormParser,
                       parsers.MultiPartParser,
@@ -38,7 +38,7 @@ class ManageFileAPIView(generics.RetrieveUpdateDestroyAPIView):
 class CreateFileAPIView(generics.CreateAPIView):
     """Upload a file to specific parent folder"""
     permission_classes = (IsAuthenticated,)
-    serializer_class = serializers.FileBaseSerializer
+    serializer_class = serializers.FileBaseCreateSerializer
     parser_classes = (parsers.FormParser,
                       parsers.MultiPartParser,
                       parsers.FileUploadParser)

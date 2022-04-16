@@ -32,6 +32,17 @@ class Folder(BaseModel):
     def get_children_files(self):
         return File.objects.filter(parent_folder=self)
 
+    @staticmethod
+    def can_place_in_folder(parent_folder, name, instance=None) -> bool:
+        folders_same_folder = Folder.objects.filter(
+            parent_folder=parent_folder
+        )
+        if instance:
+            folders_same_folder = folders_same_folder.exclude(
+                pk=instance.id
+            )
+        return not folders_same_folder.filter(name=name).exists()
+
 
 def get_s3_file_path(instance, filename):
     user = instance.owner.username
@@ -43,6 +54,7 @@ def get_s3_file_path(instance, filename):
 class File(BaseModel):
 
     name = models.CharField(max_length=30)
+    size = models.PositiveIntegerField()
     parent_folder = models.ForeignKey('explorer.Folder', null=False,
                                       on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -52,3 +64,10 @@ class File(BaseModel):
     class Meta:
         ordering = ['name']
         unique_together = ('name', 'parent_folder', 'owner')
+
+    @staticmethod
+    def can_place_in_folder(parent_folder, name, instance=None) -> bool:
+        files_same_folder = File.objects.filter(parent_folder=parent_folder)
+        if instance:
+            files_same_folder = files_same_folder.exclude(pk=instance.id)
+        return not files_same_folder.filter(name=name).exists()

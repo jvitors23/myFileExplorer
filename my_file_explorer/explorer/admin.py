@@ -10,7 +10,7 @@ class FolderAdmin(admin.ModelAdmin):
 
 class FileAdmin(admin.ModelAdmin):
     ordering = ['id']
-    list_display = ['id', 'name', 'parent_folder', 'owner']
+    list_display = ['id', 'name', 'parent_folder', 'owner', 'size']
 
 
 admin.site.register(models.Folder, FolderAdmin)
