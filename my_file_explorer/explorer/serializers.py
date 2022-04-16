@@ -21,23 +21,24 @@ class FolderBaseSerializer(serializers.ModelSerializer):
         return name
 
     def validate_parent_folder(self, parent_folder):
-        if parent_folder.owner != self.instance.owner:
+        if self.instance and parent_folder.owner != self.instance.owner:
+            # User can't use another user folder
             raise PermissionDenied()
         return parent_folder
 
     def validate(self, attrs):
-        if self.instance.parent_folder is None:
+        if self.instance and self.instance.parent_folder is None:
             # User can't edit the root folder
             raise PermissionDenied()
 
-        new_name = attrs.get('name', '')
-        if new_name:
-            parent_folder = attrs.get('parent_folder',
-                                      self.instance.parent_folder)
+        name = attrs.get('name', '')
+        if name:
+            old_parent_folder = self.instance and self.instance.parent_folder
+            parent_folder = attrs.get('parent_folder') or old_parent_folder
             if Folder.objects.filter(parent_folder=parent_folder,
-                                     name=new_name).exists():
+                                     name=name).exists():
                 raise ValidationError("There is another folder with the same "
-                                      "name in this instance parent folder!")
+                                      "name in this parent folder!")
         return super(FolderBaseSerializer, self).validate(attrs)
 
 
