@@ -13,7 +13,9 @@ class PrivateFolderApiTests(BaseFolderAPITests):
                                      password='senha123',
                                      first_name='Jose')
         self.tokens = get_tokens_for_user(self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.tokens["access"]}')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.tokens["access"]}'
+        )
 
     def test_user_can_create_folder_with_valid_payload(self):
         """Test if authenticated user can create folder"""
@@ -60,15 +62,15 @@ class PrivateFolderApiTests(BaseFolderAPITests):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_user_cant_create_folder_payload_missing_parent_folder_fails(self):
-        """Test if authenticated user can't create folder missing parent folder"""
+        """Test if user can't create folder missing parent folder"""
         payload = {
             'name': 'test',
         }
         res = self.client.post(self.CREATE_FOLDER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_user_cant_create_folder_payload_notfound_parent_folder_fails(self):
-        """Test if authenticated user can't create folder not found parent folder"""
+    def test_user_cant_create_folder_notfound_parent_folder_fails(self):
+        """Test if user can't create folder not found parent folder"""
         payload = {
             'name': 'test',
             'parent_folder': 9999,
@@ -145,8 +147,8 @@ class PrivateFolderApiTests(BaseFolderAPITests):
     def test_user_cant_move_folder_that_exists_in_destination_fails(self):
         """Test if user can't move folder that exists in destination fails"""
         self.create_folder(name='teste',
-                                      parent_folder=self.user.root_folder,
-                                      owner=self.user)
+                           parent_folder=self.user.root_folder,
+                           owner=self.user)
 
         folder_2 = self.create_folder(name='teste2',
                                       parent_folder=self.user.root_folder,

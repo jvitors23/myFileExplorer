@@ -1,38 +1,44 @@
 from explorer import serializers
 from explorer.permissions import ManageOwnObjects, CantManageRootFolder
-from explorer.models import Folder
-from rest_framework import generics, status
-from rest_framework.exceptions import PermissionDenied
+from explorer.models import Folder, File
+from rest_framework import generics, parsers
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 
 class ListFolderAPIView(generics.RetrieveAPIView):
-
+    """List all elements inside a specific folder"""
     queryset = Folder.objects.all()
     serializer_class = serializers.ParentFolderSerializer
     permission_classes = (IsAuthenticated, ManageOwnObjects)
 
 
 class ManageFolderAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """Manage folder objects"""
     queryset = Folder.objects.all()
     serializer_class = serializers.FolderBaseSerializer
-    permission_classes = (IsAuthenticated, ManageOwnObjects, CantManageRootFolder)
+    permission_classes = (IsAuthenticated, ManageOwnObjects,
+                          CantManageRootFolder)
 
 
 class CreateFolderAPIView(generics.CreateAPIView):
-    serializer_class = serializers.FolderBaseSerializer
     permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.FolderBaseSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.validated_data.update({'owner': request.user})
-        parent_folder = serializer.validated_data.get('parent_folder')
-        if parent_folder.owner != self.request.user:
-            # User can't use another user folder
-            raise PermissionDenied()
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data,
-                        status=status.HTTP_201_CREATED, headers=headers)
+
+class ManageFileAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """Manage file objects"""
+    queryset = File.objects.all()
+    serializer_class = serializers.FileBaseSerializer
+    permission_classes = (IsAuthenticated, ManageOwnObjects)
+    parser_classes = (parsers.FormParser,
+                      parsers.MultiPartParser,
+                      parsers.FileUploadParser)
+
+
+class CreateFileAPIView(generics.CreateAPIView):
+    """Upload a file to specific parent folder"""
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.FileBaseSerializer
+    parser_classes = (parsers.FormParser,
+                      parsers.MultiPartParser,
+                      parsers.FileUploadParser)
