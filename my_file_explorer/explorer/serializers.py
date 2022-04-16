@@ -11,6 +11,11 @@ class FolderBaseSerializer(serializers.ModelSerializer):
                   'owner', 'parent_folder')
         read_only_fields = ('id', 'owner', 'created_at', 'updated_at')
 
+    def validate_name(self, name):
+        invalid_character = {c for c in name if not c.isalnum()}
+        if invalid_character:
+            raise serializers.ValidationError(f'Name can\'t have {invalid_character}')
+
 
 class ChildFolderSerializer(FolderBaseSerializer):
     class Meta:
