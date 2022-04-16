@@ -12,8 +12,16 @@ class BaseModel(models.Model):
 
 
 class Folder(BaseModel):
+
     name = models.CharField(max_length=30)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE)
     parent_folder = models.ForeignKey('self', null=True,
                                       on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['name']
+        unique_together = ('name', 'parent_folder', 'owner')
+
+    def get_children_folders(self):
+        return Folder.objects.filter(parent_folder=self)
