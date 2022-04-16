@@ -27,10 +27,6 @@ class FolderBaseSerializer(serializers.ModelSerializer):
         return parent_folder
 
     def validate(self, attrs):
-        if self.instance and self.instance.parent_folder is None:
-            # User can't edit the root folder
-            raise PermissionDenied()
-
         name = attrs.get('name', '')
         if name:
             old_parent_folder = self.instance and self.instance.parent_folder

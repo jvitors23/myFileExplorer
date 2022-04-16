@@ -1,5 +1,5 @@
 from explorer import serializers
-from explorer.permissions import ManageOwnObjects
+from explorer.permissions import ManageOwnObjects, CantManageRootFolder
 from explorer.models import Folder
 from rest_framework import generics, status
 from rest_framework.exceptions import PermissionDenied
@@ -17,7 +17,7 @@ class ListFolderAPIView(generics.RetrieveAPIView):
 class ManageFolderAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Folder.objects.all()
     serializer_class = serializers.FolderBaseSerializer
-    permission_classes = (IsAuthenticated, ManageOwnObjects)
+    permission_classes = (IsAuthenticated, ManageOwnObjects, CantManageRootFolder)
 
 
 class CreateFolderAPIView(generics.CreateAPIView):
