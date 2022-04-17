@@ -92,15 +92,6 @@ class PrivateFolderApiTests(BaseFolderAPITests):
         res = self.client.post(self.CREATE_FOLDER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_user_can_create_folder_valid_payload_success(self):
-        """Test if authenticated user can create folder valid payload"""
-        payload = {
-            'name': 'test',
-            'parent_folder': self.user.root_folder.id,
-        }
-        res = self.client.post(self.CREATE_FOLDER_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
     def test_user_can_have_folder_same_name_different_parent(self):
         """Test if authenticated user can create folder with same name
             but different parent

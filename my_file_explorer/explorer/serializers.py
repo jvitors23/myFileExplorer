@@ -7,7 +7,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 
 
 def _get_invalid_character(string: str) -> set:
-    return {c for c in string if not c.isalnum() and c != '_'}
+    return {c for c in string if not c.isalnum() and c not in ['-']}
 
 
 class BaseSerializerMixin:
@@ -57,45 +57,48 @@ class ChildFolderSerializer(FolderBaseSerializer):
 
 class FileBaseCreateSerializer(serializers.ModelSerializer,
                                BaseSerializerMixin):
-    file = serializers.FileField(max_length=30)
-
     class Meta:
         model = File
         fields = ('id', 'name', 'created_at', 'updated_at',
                   'owner', 'parent_folder', 'file', 'size')
         read_only_fields = ('id', 'owner', 'created_at',
                             'updated_at', 'name', 'size')
-        extra_kwargs = {'file': {'required': True}}
+        extra_kwargs = {'file': {'required': True, 'max_length': 30}}
 
     def validate(self, attrs):
         attrs = super(FileBaseCreateSerializer, self).validate(attrs)
         file = attrs.get('file', '')
-        filename = file.name if file else self.instance.name
-        size = file.size if file else self.instance.size
-        name, extension = os.path.splitext(filename)
-        self.validate_name(name)
-        name = f'{name}{extension}'
-        parent_folder = attrs.get('parent_folder',
-                                  self.instance.parent_folder)
-        if not File.can_place_in_folder(parent_folder, name, self.instance):
+        name = attrs.get('name', '')
+        if file:
+            filename = file.name
+            name, extension = os.path.splitext(filename)
+            self.validate_name(name)
+            name = f'{name}{extension}'
+            attrs['size'] = file.size
+
+        if name:
+            attrs['name'] = name
+        else:
+            name = self.instance.name
+        old_parent_folder = self.instance and self.instance.parent_folder
+        parent_folder = attrs.get('parent_folder') or old_parent_folder
+        if not File.can_place_in_folder(parent_folder,
+                                        name, self.instance):
             raise ValidationError("There is another file with the same "
                                   "name in this parent folder!")
-        attrs['name'] = name
-        attrs['size'] = size
         attrs['owner'] = self.context['request'].user
         return attrs
 
 
 class FileBaseUpdateDeleteSerializer(FileBaseCreateSerializer):
-    file = serializers.FileField(max_length=30, required=False)
-
     class Meta:
         model = File
         fields = ('id', 'name', 'created_at', 'updated_at',
                   'owner', 'parent_folder', 'file', 'size')
-        read_only_fields = ('id', 'owner', 'created_at',
-                            'updated_at', 'name', 'size')
-        extra_kwargs = {'parent_folder': {'required': False}}
+        read_only_fields = ('id', 'owner', 'created_at', 'file',
+                            'updated_at', 'size')
+        extra_kwargs = {'parent_folder': {'required': False},
+                        'name': {'required': False}, 'max_length': 30}
 
 
 class ChildFileSerializer(FileBaseCreateSerializer):
