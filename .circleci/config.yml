@@ -59,7 +59,7 @@ jobs:
           name: Install Dependencies
           command: |
             sudo pip uninstall pipenv -y
-            sudo pip install pipenv==3.8.5
+            sudo pip install pipenv==2022.4.8
             pipenv install
       - run:
           name: Wait for Redis, and Postgres
