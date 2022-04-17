@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 
 orbs:
   python: circleci/python@1.5.0
@@ -16,7 +16,7 @@ jobs:
           name: Lint
           command: flake8 .
 
-  build-test:
+  build:
     working_directory: /app
     docker:
       - image: docker:17.05.0-ce-git
@@ -29,13 +29,48 @@ jobs:
             apk add --no-cache py-pip=9.0.0-r1
             pip install docker-compose==1.12.0
       - run:
-          name: Build and tests
+          name: Build docker image
           command: |
             cp .env-example .env
-            docker-compose -f docker-compose-tests.yml up
+            docker-compose -f docker-compose-tests.yml build
+
+  test:
+    working_directory: /app
+    docker:
+      - image: circleci/python:3.8.5
+      environment:
+      PIPENV_VENV_IN_PROJECT: "true"
+      DATABASE_URL: postgresql://postgres@localhost/database
+
+      - image: circleci/postgres:11.5
+       environment:
+       POSTGRES_USER: postgres
+       POSTGRES_DB: database
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo pip uninstall pipenv -y
+            sudo pip install pipenv==3.8.5
+            pipenv install
+      - run:
+          name: Wait for Redis, and Postgres
+          command: |
+            sudo wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo dockerize -wait tcp://localhost:5432 -timeout 10m
+
+      - run:
+          name: Run tests
+          command: |
+            pipenv run python manage.py test --verbosity 3
 
 workflows:
   quality:
     jobs:
       - lint
-      - build-test
+      - build
+      - test
