@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block main_content %}
+	<div class="container" style="width: 100%;">
+		<h2 style="text-align: center; margin-bottom: 20px; display: flex; flex-direction: column">
+			<i class="fas fa-folder"></i>
+			Sign in to your account</h2>
+<div class="login-container">
+		<form id="login-form" class="login-form" autocomplete="off">
+			<span id="error-messages"></span>
+			<div class="form-group">
+				<label for="username" class="">Username</label>
+				<input required type="text" placeholder="Your username" autocomplete="off" id="id_username"
+						class="custom-input">
+			</div>
+			<div class="form-group">
+				<label for="password" class="">Password</label>
+				<input required type="password" placeholder="Your password" autocomplete="off" id="id_password"
+						class="custom-input">
+
+			</div>
+			<button type="submit" class="submit-btn">Sign in</button>
+		</form>
+		<p class="login-sub">Dont have an account? <a href="#" class="link-signup">Sign up now</a></p>
+	</div>
+	</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+	<script src="{% static 'js/auth.js' %}"></script>
+{% endblock %}

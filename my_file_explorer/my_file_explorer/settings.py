@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # my apps
     'explorer',
     'user',
+    'frontend'
 ]
 
 # Application definition
