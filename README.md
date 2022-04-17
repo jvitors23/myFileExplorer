@@ -9,12 +9,13 @@ Sistema de arquivos feito com Python e Django.
 * Python
 * [Django](https://www.djangoproject.com/)
 * [Django Rest Framework](https://www.django-rest-framework.org/)
+* [Docker](https://www.docker.com/)
+* [CircleCI](https://circleci.com/)
 * [Caddy](https://caddyserver.com/)
 * [gunicorn](https://gunicorn.org/)
-* [Docker](https://www.docker.com/)
 * [AWS S3](https://aws.amazon.com/pt/s3/)
 * [AWS EC2](https://aws.amazon.com/pt/ec2/)
-* [CircleCI](https://circleci.com/)
+
 
 ## Detalhes da aplicação
 
@@ -33,6 +34,7 @@ O projeto Django possui 2 apps, eles são:
   <p align="center">
     <img src="https://user-images.githubusercontent.com/52494917/163726459-48eae00e-1679-4b9f-aef9-8ba2fbae7b5e.png" />
   </p>
+  
    * CRUD de pastas ```/api/folder```
    * CRUD de arquivos ```/api/file```
    * Listagem de objetos de uma pasta ```/api/list-folder/<id>```
@@ -54,7 +56,12 @@ https://3.234.194.198.nip.io/api/swagger
 
 
 ## Deploy
-O deploy da aplicação foi feito usando a AWS (EC2), Docker e o Caddy. 
+O deploy da aplicação foi feito usando a AWS (EC2), Docker e o Caddy. Na pasta ```deploy``` existe um arquivo docker-compose.yml que possui 3 serviços:
+* Postgres: Banco de dados SQL usado pela aplicação (também é possível utilizar bancos hospedados em serviços como o RDS, basta apenas alterar as credencias do banco no arquivo .env).
+* django: Serviço que roda a aplicação Python. Possui um Dockerfile personalizado (```deploy/django/Dockerfile```)  e utiliza o gunicorn como servidor wsgi.
+* Caddy: É um servidor HTTP que serve os arquivos estáticos e faz o proxy para o gunicorn servir rotas não estáticas. Instala certificado HTTPS automaticamente usando o Let's encrypt.
+
+A aplicação pode ser acessada em: 
 
 https://3.234.194.198.nip.io/api/swagger
 
