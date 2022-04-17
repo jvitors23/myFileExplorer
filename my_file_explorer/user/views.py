@@ -7,19 +7,23 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
-from user.serializers import LoginSerializer, UserSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from user.serializers import UserSerializer, MyTokenObtainPairSerializer
 
 
 User = get_user_model()
 
 
 def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
-
+    refresh = MyTokenObtainPairSerializer.get_token(user)
     return {
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 
 
 class RegisterUserView(generics.CreateAPIView):
@@ -34,10 +38,11 @@ class RegisterUserView(generics.CreateAPIView):
 
 class LoginView(APIView):
 
-    serializer_class = LoginSerializer
+    serializer_class = MyTokenObtainPairSerializer
     permission_classes = (permissions.AllowAny,)
 
-    @swagger_auto_schema(request_body=LoginSerializer, tags=["user"])
+    @swagger_auto_schema(request_body=MyTokenObtainPairSerializer,
+                         tags=["user"])
     def post(self, request):
         """Login view that saves JWT token using browser cookies"""
         username = request.data.get('username', None)
@@ -94,3 +99,13 @@ class LogoutView(APIView):
         response.delete_cookie(settings.SIMPLE_JWT['REFRESH_COOKIE'])
         response.data = {"Success": "Logout successfully"}
         return response
+
+
+class ManageUserView(generics.RetrieveAPIView):
+    """Manage the authenticated user"""
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
