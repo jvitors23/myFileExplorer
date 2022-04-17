@@ -2,13 +2,57 @@
 
 [![CircleCI](https://circleci.com/gh/JvitorS23/myFileExplorer.svg?style=svg)](https://circleci.com/gh/JvitorS23/myFileExplorer)
 
-Sistema de arquivos feito com Python e Django.
+Sistema de arquivos feito com Python e Django. 
 
 ## Tecnologias utilizadas:
 
 * Python
 * [Django](https://www.djangoproject.com/)
 * [Django Rest Framework](https://www.django-rest-framework.org/)
+* [Caddy](https://caddyserver.com/)
+* [gunicorn](https://gunicorn.org/)
+* [Docker](https://www.docker.com/)
+* [AWS S3](https://aws.amazon.com/pt/s3/)
+* [AWS EC2](https://aws.amazon.com/pt/ec2/)
+* [CircleCI](https://circleci.com/)
+
+## Detalhes da aplicação
+
+O projeto Django possui 2 apps, eles são:
+
+* User: Responsável pela criação e autenticação de usuários (Autenticação JWT) 
+   * Rota de login: ```/api/user/login```
+   * Rotas para tokens: ```/api/token```
+   * Rota de registro de um novo usuário: ```/api/user/register```
+   * Rota de logout: ```/api/user/logout```
+* Explorer: Responsável pelo CRUD de pastas e arquivos. Esse app possui dois models: Folder e File. Eles são as 
+  entidades principais da aplicação, cada arquivo ou pasta se relaciona com seu usuário dono. Além disso, todo novo 
+  usuário possui uma pasta raiz, criada automaticamente e que não pode ser editada. Uma pasta ou arquivo possui uma 
+  pasta pai (exceto a pasta raiz do usuário). 
+   * CRUD de pastas ```/api/folder```
+   * CRUD de arquivos ```/api/file```
+   * Listagem de objetos de uma pasta ```/api/list-folder/<id>```
+
+### Features:
+* Login e registro de usuários
+* Autenticação para acessar API
+* CRUD de pastas e arquivos 
+* Arquivos armazenados no S3
+* Testes automatizados para todas as rotas da API
+* CircleCI para pipelines de qualidade de código (lint, build e execução de testes)
+
+
+## Documentação das API's (swagger)
+
+A documentação da API está disponível em:
+
+https://3.234.194.198.nip.io/api/swagger
+
+
+## Deploy
+O deploy da aplicação foi feito usando a AWS (EC2), Docker e o Caddy. 
+
+https://3.234.194.198.nip.io/api/swagger
 
 ## Execução da aplicação
 
@@ -23,17 +67,3 @@ raiz do repositório seguindo o modelo do arquivo `.env-example`.
 ```
 O docker fará o build de uma imagem personalizada, já instalando as dependências necessárias (requirements.txt), em seguida, o servidor de desenvolvimento estará acessível em: [http://localhost:8000](http://localhost:8000). Além do container rodando o servidor Django, o docker-compose também cria um container para o PostgreSQL (banco de dados usado pela aplicação).
 
-### Iniciar a aplicação sem usar Docker:
-
-- Instalação das dependências (é recomendado usar um virtualenv):
-```bash
- pip install -r requirements.txt
-```
-Em seguida, é preciso [baixar e instalar o PostgreSQL](https://www.postgresql.org/download/), criar uma base de dados para a aplicação e configurar as credenciais do banco como variáveis de ambiente no arquivo .env.
-
-- Rodar migrations e iniciar servidor de desenvolvimento:
-```bash
- python manage.py migrate 
- python manage.py runserver 0.0.0.0:8000
-```
-O servidor de desenvolvimento estará acessível em: [http://localhost:8000](http://localhost:8000).
