@@ -1,0 +1,82 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@1.5.0
+
+jobs:
+  lint:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: requirements-dev.txt
+      - run:
+          name: Lint
+          command: flake8 .
+
+  build:
+    working_directory: /app
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache py-pip=9.0.0-r1
+            pip install docker-compose==1.12.0
+      - run:
+          name: Build docker image
+          command: |
+            cp .env-example .env
+            docker-compose build
+
+  test:
+    working_directory: ~/circleci-django
+    docker:
+      - image: circleci/python:3.8.5
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+          DB_HOST: localhost
+          DB_NAME: file_explorer_db
+          DB_USER: postgres
+          DB_PASS: supersecretpassword
+
+      - image: circleci/postgres:10
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: file_explorer_db
+          POSTGRES_PASSWORD: supersecretpassword
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo pip uninstall pipenv -y
+            sudo pip install pipenv==2022.4.8
+            pipenv install
+      - run:
+          name: Wait for Redis, and Postgres
+          command: |
+            sudo wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo dockerize -wait tcp://localhost:5432 -timeout 10m
+
+      - run:
+          name: Run tests
+          command: |
+            ls
+            cd my_file_explorer && pipenv run python manage.py test --verbosity 3
+
+workflows:
+  version: 2
+  quality:
+    jobs:
+      - lint
+      - build
+      - test
