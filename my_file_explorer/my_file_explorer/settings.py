@@ -166,9 +166,9 @@ SIMPLE_JWT = {
 }
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/vol/web/media'
+STATIC_ROOT = '/vol/web/static'
 
 # S3 config
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'xxxxx')
