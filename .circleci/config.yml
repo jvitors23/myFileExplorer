@@ -35,7 +35,7 @@ jobs:
             docker-compose -f docker-compose-tests.yml build
 
   test:
-    working_directory: /app
+    working_directory: ~/circleci-django
     docker:
       - image: circleci/python:3.8.5
         environment:
