@@ -33,7 +33,7 @@ services:
       context: ../
       dockerfile: deploy/Dockerfile
     command: sh -c "./wait_db.sh db:5432 --
-      python manage.py collectstatic &&
+      python manage.py collectstatic --noinput &&
       python manage.py migrate &&
       gunicorn my_file_explorer.wsgi:application --bind 0.0.0.0:8000"
     environment:
