@@ -40,12 +40,16 @@ jobs:
       - image: circleci/python:3.8.5
         environment:
           PIPENV_VENV_IN_PROJECT: true
-          DATABASE_URL: postgresql://postgres@localhost/database
+          DB_HOST: localhost
+          DB_NAME: file_explorer_db
+          DB_USER: postgres
+          DB_PASS: supersecretpassword
 
       - image: circleci/postgres:10
         environment:
           POSTGRES_USER: postgres
-          POSTGRES_DB: database
+          POSTGRES_DB: file_explorer_db
+          POSTGRES_PASSWORD: supersecretpassword
 
     steps:
       - checkout
