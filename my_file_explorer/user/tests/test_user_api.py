@@ -3,10 +3,13 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
+from user.views import get_tokens_for_user
+
 
 CREATE_USER_URL = reverse('register')
 LOGIN_URL = reverse('login')
 LOGOUT_URL = reverse('login')
+PROFILE_URL = reverse('profile')
 
 
 def create_user(**params):
@@ -115,3 +118,30 @@ class PublicUserApiTests(TestCase):
         """Test that user must be logged to perform logout"""
         res = self.client.post(LOGOUT_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserApiTests(TestCase):
+    """Test the user API (public) """
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user(username='jvss',
+                                password='senha123',
+                                first_name='Jose')
+        self.tokens = get_tokens_for_user(self.user)
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.tokens["access"]}'
+        )
+
+    def test_retrieve_profile_success(self):
+        """Test retrieve profile for logged in user"""
+        res = self.client.get(PROFILE_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['first_name'], self.user.first_name)
+        self.assertEqual(res.data['username'], self.user.username)
+        self.assertEqual(res.data['root_folder'], self.user.root_folder.id)
+
+    def test_post_me_not_allowed(self):
+        """Test a post is not allowed on the ME URL"""
+        res = self.client.post(PROFILE_URL, {})
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
