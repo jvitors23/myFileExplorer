@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+
+  db:
+    image: postgres:10-alpine
+    env_file: ../.env
+    environment:
+      - POSTGRES_DB=teste
+      - POSTGRES_USER=teste_user
+      - POSTGRES_PASSWORD=teste123
+    ports:
+      - "5432:5432"
+
+  caddy:
+    env_file: ../.env
+    image: caddy/caddy
+    container_name: "caddy"
+    hostname: "caddy"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    environment:
+      - MY_DOMAIN=blabla.org
+
+  django:
+    restart: unless-stopped
+    env_file: ../.env
+    expose:
+      - 8000
+    build:
+      context: ../
+      dockerfile: deploy/Dockerfile
+    command: gunicorn my_file_explorer.wsgi:application --bind 0.0.0.0:8000
+    environment:
+      - DB_HOST=db
+      - DB_NAME=teste
+      - DB_USER=teste_user
+      - DB_PASS=teste123
+    depends_on:
+      - db
