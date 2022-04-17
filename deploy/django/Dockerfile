@@ -15,12 +15,5 @@ RUN mkdir /app
 WORKDIR /app
 COPY ./my_file_explorer /app
 
-RUN mkdir -p /app/media
-RUN mkdir -p /app/static
-# For security (don't run app with root user)
-RUN adduser -D user
-RUN chown -R user:user /app/media
-RUN chown -R user:user /app/static
-RUN chmod -R 755 /app/media
-RUN chmod -R 755 /app/static
-USER user
+RUN mkdir -p /vol/web/media
+RUN mkdir -p /vol/web/static

@@ -22,7 +22,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./static:/var/static/
 
   django:
     restart: unless-stopped
@@ -31,7 +32,7 @@ services:
       - 8000
     build:
       context: ../
-      dockerfile: deploy/Dockerfile
+      dockerfile: deploy/django/Dockerfile
     command: sh -c "./wait_db.sh db:5432 --
       python manage.py collectstatic --noinput &&
       python manage.py migrate &&
@@ -43,3 +44,5 @@ services:
       - DB_PASS=supersecretpassword232323
     depends_on:
       - db
+    volumes:
+      - ./static:/vol/web/static

@@ -1,3 +1,0 @@
-{$MY_DOMAIN} {
-    reverse_proxy django:8000
-}
