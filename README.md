@@ -29,6 +29,10 @@ O projeto Django possui 2 apps, eles são:
   entidades principais da aplicação, cada arquivo ou pasta se relaciona com seu usuário dono. Além disso, todo novo 
   usuário possui uma pasta raiz, criada automaticamente e que não pode ser editada. Uma pasta ou arquivo possui uma 
   pasta pai (exceto a pasta raiz do usuário). 
+  
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/52494917/163726459-48eae00e-1679-4b9f-aef9-8ba2fbae7b5e.png" />
+  </p>
    * CRUD de pastas ```/api/folder```
    * CRUD de arquivos ```/api/file```
    * Listagem de objetos de uma pasta ```/api/list-folder/<id>```
