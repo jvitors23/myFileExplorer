@@ -1,5 +1,7 @@
 # MyFileExplorer
 
+[![CircleCI](https://circleci.com/gh/JvitorS23/myFileExplorer.svg?style=svg)](https://circleci.com/gh/JvitorS23/myFileExplorer)
+
 Sistema de arquivos feito com Python e Django.
 
 ## Tecnologias utilizadas:
