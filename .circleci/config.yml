@@ -70,7 +70,8 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pipenv run python manage.py test --verbosity 3
+            ls
+            cd my_file_explorer && pipenv run python manage.py test --verbosity 3
 
 workflows:
   quality:
