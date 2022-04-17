@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/JvitorS23/myFileExplorer.svg?style=svg)](https://circleci.com/gh/JvitorS23/myFileExplorer)
 
-Sistema de arquivos feito com Python e Django. 
+Sistema de arquivos feito com Python e Django. Aplicação que permite um usuário criar pastas e arquivos, os arquivos são armazenados no S3.
 
 ## Tecnologias utilizadas:
 
