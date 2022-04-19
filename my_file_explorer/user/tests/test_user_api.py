@@ -6,9 +6,9 @@ from rest_framework.test import APIClient
 from user.views import get_tokens_for_user
 
 
-CREATE_USER_URL = reverse('register')
-LOGIN_URL = reverse('login')
-LOGOUT_URL = reverse('login')
+CREATE_USER_URL = reverse('signup')
+LOGOUT_URL = reverse('logout')
+TOKEN_URL = reverse('token_obtain_pair')
 PROFILE_URL = reverse('profile')
 
 
@@ -98,7 +98,7 @@ class PublicUserApiTests(TestCase):
             'first_name': 'jose'
         }
         create_user(**payload)
-        res = self.client.post(LOGIN_URL, payload)
+        res = self.client.post(TOKEN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -110,7 +110,7 @@ class PublicUserApiTests(TestCase):
             'username': 'jv@email.com',
             'password': 'wrong'
         }
-        res = self.client.post(LOGIN_URL, payload)
+        res = self.client.post(TOKEN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 

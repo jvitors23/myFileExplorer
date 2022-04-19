@@ -3,7 +3,12 @@
         root * /var/
         file_server
     }
-    handle {
+    handle /app* {
+        root * /frontend
+        file_server
+    }
+
+    handle /api* {
         reverse_proxy django:8000
     }
 }

@@ -3,7 +3,6 @@ from django.middleware import csrf
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import permissions, generics
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
@@ -26,7 +25,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class RegisterUserView(generics.CreateAPIView):
+class SignUpUserView(generics.CreateAPIView):
     """Create a new user in the system"""
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny,)
@@ -34,51 +33,6 @@ class RegisterUserView(generics.CreateAPIView):
     @swagger_auto_schema(tags=["user"])
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
-
-
-class LoginView(APIView):
-
-    serializer_class = MyTokenObtainPairSerializer
-    permission_classes = (permissions.AllowAny,)
-
-    @swagger_auto_schema(request_body=MyTokenObtainPairSerializer,
-                         tags=["user"])
-    def post(self, request):
-        """Login view that saves JWT token using browser cookies"""
-        username = request.data.get('username', None)
-        password = request.data.get('password', None)
-        user = User.objects.filter(username=username).first()
-
-        if user is None:
-            raise AuthenticationFailed("User not found!")
-
-        if not user.check_password(password):
-            raise AuthenticationFailed("Incorrect password!")
-
-        if not user.is_active:
-            raise AuthenticationFailed("User is not active!")
-
-        data = get_tokens_for_user(user)
-        response = Response()
-        response.set_cookie(
-            key=settings.SIMPLE_JWT['AUTH_COOKIE'],
-            value=data["access"],
-            expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
-            httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
-        )
-        response.set_cookie(
-            key=settings.SIMPLE_JWT['REFRESH_COOKIE'],
-            value=data["refresh"],
-            expires=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
-            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
-            httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
-        )
-        csrf.get_token(request)
-        response.data = {"Success": "Login successfully", "data": data}
-        return response
 
 
 class LogoutView(APIView):

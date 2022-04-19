@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" />
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet" />
+	<link href="css/font-awesome.css" rel="stylesheet" />
+	<link href="css/global.css" rel="stylesheet" />
+	<link href="css/main.css" rel="stylesheet" />
+	<title>MyFileExplorer</title>
+</head>
+
+<body>
+	<div id="root">
+		<header id="navbar" class="container">
+			<nav>
+				<div id="logo">
+					<a href="index.html"><i class="fas fa-folder"></i> <strong>MyFileExplorer</strong></a>
+				</div>
+				<div id="user-info">
+					<a href="register.html" style="margin: 0 15px">
+						<i class="fas fa-sign-up-alt"></i> Sign up
+					</a>
+				</div>
+			</nav>
+		</header>
+		<div id="container">
+			<header class="container__header">
+				<h3>File Explorer</h3>
+				<i class="fas fa-expand" onclick="container.toogleFullScreen()"></i>
+			</header>
+			<section class="container__actions">
+				<div class="container__actions--navigation">
+					<i class="fas fa-arrow-left"></i>
+					<i class="fas fa-arrow-right"></i>
+					<i class="fas fa-home"></i>
+				</div>
+				<div class="container__actions--folder">
+					<button class="container__actions--new" onclick="folder.createFolder()">
+						<i class="fas fa-folder-plus"></i>
+						<span>New Folder</span>
+					</button>
+					<button class="container__actions--rename">
+						<i class="fas fa-pen-square"></i>
+						<span>Rename</span>
+					</button>
+					<button class="container__actions--delete">
+						<i class="fas fa-times"></i>
+						<span>Delete</span>
+					</button>
+					<button class="container__actions--move">
+						<i class="fas fa-angle-double-right"></i>
+						<span>Move</span>
+					</button>
+					<button class="container__actions--move" disabled>
+						<i class="fas fa-angle-double-right"></i>
+						<span>Disabled</span>
+					</button>
+				</div>
+			</section>
+			<main class="container__items">
+				<form id="drop-area">
+					<div class="drop-area--info">
+						<div>
+							<i class="fas fa-upload"></i>
+							<span>Solte o arquivo para realizar o upload</span>
+						</div>
+					</div>
+					<div class="container__items--grid">
+						<a ondblclick="window.location ='/pasta1.html'">
+							<i class="fas fa-folder"></i>
+							<div>
+								<div contenteditable onclick="(e) => e.stopPropagation();">Pasta Teste</div>
+							</div>
+						</a>
+
+						<a ondblclick="window.location ='/pasta1.html'">
+							<i class="fas fa-folder"></i>
+							<div>
+								<div contenteditable>Projetos</div>
+							</div>
+						</a>
+
+						<a ondblclick="window.location ='/pasta1.html'">
+							<i class="fas fa-folder-open"></i>
+							<div>
+								<div contenteditable>Nome grande</div>
+							</div>
+						</a>
+
+						<a ondblclick="window.location ='/pasta1.html'">
+							<i class="fas fa-folder"></i>
+							<div>
+								<div contenteditable>Filinto</div>
+							</div>
+						</a>
+
+						<a>
+							<i class="fas fa-file-image"></i>
+							<div>
+								<div contenteditable>image.png</div>
+							</div>
+						</a>
+
+						<a>
+							<i class="fas fa-file-pdf"></i>
+							<div>
+								<div contenteditable>teste.pdf</div>
+							</div>
+						</a>
+
+						<a>
+							<i class="fas fa-file-excel"></i>
+							<div>
+								<div contenteditable>teste.csv</div>
+							</div>
+						</a>
+					</div>
+				</form>
+				<section class="container__items--detail open">
+					<div class="container__items--detail--empty">
+						<h3>Details</h3>
+						<div>
+							<i class="fas fa-info-circle"></i>
+							<p>Select a file or folder to see details</p>
+						</div>
+					</div>
+				</section>
+			</main>
+		</div>
+
+		<script>
+			const containerElement = document.getElementById("container");
+			const folderContainerElement = document.querySelector('.container__items--grid');
+
+			const container = {
+				toogleFullScreen: () => {
+					containerElement.classList.toggle("fullscreen");
+				},
+			};
+
+			const folder = {
+				createFolder: () => {
+					folderContainerElement.innerHTML = folderContainerElement.innerHTML +
+						`
+	  <a>
+		  <i class="fas fa-folder"></i>
+		  <div><div contenteditable>New Folder</div></div>
+	  </a>
+	  `
+				}
+			}
+		</script>
+		<script>
+			const dropArea = document.getElementById("drop-area");
+
+			["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+				dropArea.addEventListener(eventName, preventDefaults, false);
+			});
+			["dragenter", "dragover"].forEach((eventName) => {
+				dropArea.addEventListener(eventName, highlight, false);
+			});
+			["dragleave", "drop"].forEach((eventName) => {
+				dropArea.addEventListener(eventName, unhighlight, false);
+			});
+
+			function highlight(e) {
+				dropArea.querySelector(".drop-area--info").classList.add("visible");
+			}
+
+			function unhighlight(e) {
+				setTimeout(
+					() =>
+						dropArea
+							.querySelector(".drop-area--info")
+							.classList.remove("visible"),
+					5000
+				);
+			}
+			function preventDefaults(e) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+
+			dropArea.addEventListener("drop", handleDrop, false);
+
+			function handleDrop(e) {
+				let dt = e.dataTransfer;
+				let files = dt.files;
+
+				handleFiles(files);
+			}
+
+			function handleFiles(files) {
+				[...files].forEach(uploadFile);
+			}
+
+			function uploadFile(file) {
+				console.log(file);
+				// let url = 'API URL'
+				// let formData = new FormData()
+
+				// formData.append('file', file)
+
+				// fetch(url, {
+				//   method: 'POST',
+				//   body: formData
+				// })
+				// .then(() => { /* Done. Inform the user */ })
+				// .catch(() => { /* Error. Inform the user */ })
+			}
+		</script>
+</body>
+
+</html>
