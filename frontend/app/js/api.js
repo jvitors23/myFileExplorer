@@ -1,8 +1,7 @@
 import axios from 'https://cdn.skypack.dev/axios';
 
-
 export const api = axios.create({
-    baseUrl: BASE_URL,
+    baseURL: BASE_URL,
 });
 
 if(getCookie('access_token')){
