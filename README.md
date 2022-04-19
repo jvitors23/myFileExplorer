@@ -22,9 +22,8 @@ Sistema de arquivos feito com Python e Django. Aplicação que permite um usuár
 O projeto Django possui 2 apps, eles são:
 
 * User: Responsável pela criação e autenticação de usuários (Autenticação JWT) 
-   * Rota de login: ```/api/user/login```
-   * Rotas para tokens: ```/api/token```
-   * Rota de registro de um novo usuário: ```/api/user/register```
+   * Rotas para tokens JWT: ```/api/user/token``` e ```/api/user/token/refresh```
+   * Rota de registro de um novo usuário: ```/api/user/signup```
    * Rota de logout: ```/api/user/logout```
 * Explorer: Responsável pelo CRUD de pastas e arquivos. Esse app possui dois models: Folder e File. Eles são as 
   entidades principais da aplicação, cada arquivo ou pasta se relaciona com seu usuário dono. Além disso, todo novo 
