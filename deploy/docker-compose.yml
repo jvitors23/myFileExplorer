@@ -24,6 +24,7 @@ services:
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./static:/var/static/
+      - ../frontend:/frontend/
 
   django:
     restart: unless-stopped

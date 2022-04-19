@@ -27,7 +27,6 @@ urlpatterns = [
          name='schema-swagger-ui'),
     path('api/user/', include('user.urls')),
     path('api/', include('explorer.urls')),
-    path('', include('frontend.urls')),
 ]
 
 if settings.DEBUG:

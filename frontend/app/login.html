@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" />
+      <link
+         href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap"
+         rel="stylesheet"
+         />
+      <link href="css/font-awesome.css" rel="stylesheet" />
+      <link href="css/global.css" rel="stylesheet" />
+      <link href="css/main.css" rel="stylesheet" />
+      <title>MyFileExplorer</title>
+   </head>
+   <body>
+      <div id="root">
+         <header id="navbar" class="container">
+            <nav>
+               <div id="logo">
+                  <a href="{% url 'folder_index' %}"
+                     ><i class="fas fa-folder"></i> <strong>MyFileExplorer</strong></a
+                     >
+               </div>
+               <div id="user-info">
+                  {% if request.user.is_authenticated %}
+                  <span style="margin: 0 20px">
+                  <i class="fas fa-user-alt"></i> {{ request.user.username }}</span
+                     >
+                  <a href="{% url 'logout' %}"
+                     ><i class="fas fa-sign-out-alt"></i> Logout</a
+                     >
+                  {% else %}
+                  <a href="{% url 'front_login' %}"
+                     ><i class="fas fa-sign-in-alt"></i> Login</a>
+                  <a href="{% url 'front_register' %}" style="margin: 0 15px">
+                  <i class="fas fa-sign-up-alt"></i> Sign up
+                  </a>
+                  {% endif %}
+               </div>
+            </nav>
+         </header>
+         <div class="container" style="width: 100%;">
+            <h2 style="text-align: center; margin-bottom: 20px; display: flex; flex-direction: column">
+               <i class="fas fa-folder"></i>
+               Sign in to your account
+            </h2>
+            <div class="login-container">
+               <form id="login-form" class="login-form" autocomplete="off">
+                  <span id="error-messages"></span>
+                  <div class="form-group">
+                     <label for="username" class="">Username</label>
+                     <input required type="text" placeholder="Your username" autocomplete="off" id="id_username"
+                        class="custom-input">
+                  </div>
+                  <div class="form-group">
+                     <label for="password" class="">Password</label>
+                     <input required type="password" placeholder="Your password" autocomplete="off" id="id_password"
+                        class="custom-input">
+                  </div>
+                  <button type="submit" class="submit-btn">Sign in</button>
+               </form>
+               <p class="login-sub">Dont have an account? <a href="{% url 'front_register' %}" class="link-signup">Sign up
+                  now</a>
+               </p>
+            </div>
+         </div>
+         <script type="module">
+            import {api} from 'frontend/app/js/api.js'
+            const loginForm = document.getElementById('login-form');
+            var usernameInput = document.getElementById('id_username')
+            var passwordInput = document.getElementById('id_password')
+            var errorMessage = document.getElementById('error-messages')
+         </script>
+      </div>
+      <script>
+		const LOGOUT_URL = "/api/user/logout/";
+		const LOGIN_URL = "/login/"
+		const SIGNUP_URL = "/api/user/signup/";
+		const TOKEN_URL = "/api/user/token/";
+		const TOKEN_REFRESH_URL = "/api/user/token/refresh/"
+		const INDEX_URL = "/";
+		const BASE_URL = "localhost:8000";
+      </script>
+      <script>
+         function getCookie(name) {
+         	const value = `; ${document.cookie}`;
+         	const parts = value.split(`; ${name}=`);
+         	if (parts.length === 2) return parts.pop().split(';').shift();
+         }
+
+         function setCookie(name, value, days) {
+         	let expires = "";
+         	if (days) {
+         		const date = new Date();
+         		date.setTime(date.getTime() + (days*24*60*60*1000));
+         		expires = "; expires=" + date.toUTCString();
+         	}
+         	document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+         }
+      </script>
+   </body>
+</html>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block main_content %}
+	<div class="container" style="width: 100%;">
+		<h2 style="text-align: center; margin-bottom: 20px; display: flex; flex-direction: column">
+			<i class="fas fa-folder"></i>
+			Create your account
+		</h2>
+<div class="login-container">
+		<form id="signup-form" class="signup-form" autocomplete="off">
+			<span id="error-messages"></span>
+			<div class="form-group">
+				<label for="username" class="">First name</label>
+				<input required type="text" placeholder="Your first name" autocomplete="off" id="id_first_name"
+						class="custom-input">
+			</div>
+			<div class="form-group">
+				<label for="username" class="">Username</label>
+				<input required type="text" placeholder="Your username" autocomplete="off" id="id_username"
+						class="custom-input">
+			</div>
+			<div class="form-group">
+				<label for="password" class="">Password</label>
+				<input required type="password" placeholder="Your password" autocomplete="off" id="id_password"
+						class="custom-input">
+			</div>
+
+			<div class="form-group">
+				<label for="password" class="">Confirm password</label>
+				<input required type="password" placeholder="Your password" autocomplete="off" id="id_password_confirm"
+						class="custom-input">
+			</div>
+			<button type="submit" class="submit-btn">Sign up</button>
+
+			<p class="login-sub">Already have an account? <a href="{% url 'front_login' %}" class="link-signup">Sign
+				in now</a>
+			</p>
+		</form>
+	</div>
+	</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+	<script type="module">
+		import {api} from '{% static 'js/api.js'  %}'
+		const sigUpForm = document.getElementById('signup-form');
+		const usernameInput = document.getElementById('id_username');
+		const firstNameInput = document.getElementById('id_first_name');
+		const passwordInput = document.getElementById('id_password');
+		const passwordConfirmInput = document.getElementById('id_password_confirm');
+		const errorMessage = document.getElementById('error-messages');
+		sigUpForm.onsubmit = (event) => {
+		    event.preventDefault();
+			if(passwordInput.value !== passwordConfirmInput.value){
+			    errorMessage.innerText = "Passwords must be the same";
+			}else{
+				api.post(SIGNUP_URL, {
+				    username: usernameInput.value,
+					first_name: firstNameInput.value,
+					password: passwordInput.value,
+				}).then( (res) => {
+					api.post(TOKEN_URL, {
+					    username: res.data.username,
+						password: passwordInput.value,
+					}).then(res => {
+						setCookie("access_token", res.data.access, 7);
+						setCookie("refresh_token", res.data.refresh, 15);
+						window.location.href = INDEX_URL;
+						api.defaults.headers.authorization = `Bearer ${res.data.access}`;
+					});
+				}).catch((err) => {
+				    errorMessage.innerHTML = "Sign up failed! Check your credentials!";
+				});
+			}
+		}
+	</script>
+{% endblock %}
