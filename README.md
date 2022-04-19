@@ -51,7 +51,7 @@ O projeto Django possui 2 apps, eles são:
 
 A documentação da API está disponível em:
 
-https://3.234.194.198.nip.io/api/swagger
+https://34.199.85.48.sslip.io/api/swagger
 
 
 ## Deploy
@@ -62,7 +62,7 @@ O deploy da aplicação foi feito usando a AWS (EC2), Docker e o Caddy. Na pasta
 
 A aplicação pode ser acessada em: 
 
-https://3.234.194.198.nip.io/api/swagger
+https://34.199.85.48.sslip.io/api/swagger
 
 ## Execução da aplicação
 
