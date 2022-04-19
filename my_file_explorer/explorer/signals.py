@@ -4,6 +4,6 @@ from explorer.models import File
 
 
 @receiver(pre_delete, sender=File)
-def create_root_folder(sender, instance, **kwargs):
+def delete_s3_file(sender, instance, **kwargs):
     # Ensure that file is deleted from S3
     instance.file.delete()
